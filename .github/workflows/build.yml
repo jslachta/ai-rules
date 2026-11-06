@@ -1,6 +1,8 @@
 # =====================================================================
 #  GitHub Actions — AI-asistovaný vývoj (pravidla pro projekty)
-#  Engine: XeLaTeX.  Ekvivalent původní .gitlab-ci.yml.
+#  Engine: LuaLaTeX (latexmk).  Ekvivalent původní .gitlab-ci.yml.
+#  Výstup: tagované PDF/UA-2; shodu ověřuje veraPDF a nevyhovující
+#  PDF build shodí (PR i vydání).
 #
 #  Model (shodný s GitLab variantou):
 #   • PR do main: jen BUILD + ověření kompilace. PDF jako artifact
@@ -52,8 +54,13 @@ env:
   TEX_MAIN: ai-rules
   # Podsložka s anglickou variantou
   EN_DIR: en
-  # TeX Live image — shodný se zdrojem v GitLab variantě.
-  TEXLIVE_IMAGE: ghcr.io/xu-cheng/texlive-full:latest
+  # TeX Live image — připnutý na datovaný tag, ne `latest`: tagování
+  # (latex-lab) se mezi verzemi jádra mění a vydání má být reprodukovatelné.
+  # Jen informativně — container.image env kontext neumí, hodnota je
+  # proto zopakovaná u obou jobů níže; měň obě místa současně.
+  TEXLIVE_IMAGE: ghcr.io/xu-cheng/texlive-full:20261001
+  # veraPDF (validátor PDF/UA) — taky jen informativně, viz kroky Validate.
+  VERAPDF_IMAGE: verapdf/cli:v1.30.3
 
 jobs:
   # ------------------------------------------------------------------
@@ -65,7 +72,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/xu-cheng/texlive-full:latest
+      image: ghcr.io/xu-cheng/texlive-full:20261001
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -109,21 +116,18 @@ jobs:
 
       - name: Build PDFs
         run: |
-          # dvojí běh kvůli TOC a \pageref{LastPage}
-          xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex"
-          xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex"
+          # latexmk opakuje běhy, dokud se neustálí TOC, \pageref{LastPage} a odkazy
+          LATEXMK="latexmk -lualatex -interaction=nonstopmode -halt-on-error"
+          ${LATEXMK} "${TEX_MAIN}.tex"
           cp "${TEX_MAIN}.pdf" "${DOC_BASENAME}.pdf"
-          xelatex -interaction=nonstopmode -halt-on-error motivace.tex
-          xelatex -interaction=nonstopmode -halt-on-error motivace.tex
+          ${LATEXMK} motivace.tex
           cp motivace.pdf "${DOC_BASENAME}-motivace.pdf"
 
           # Anglická varianta: build probíhá uvnitř en/, aby \input{preamble.tex}
           # trefil anglickou preambuli (jazyk, uvozovky).
           ( cd "${EN_DIR}" \
-            && xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex" \
-            && xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex" \
-            && xelatex -interaction=nonstopmode -halt-on-error motivation.tex \
-            && xelatex -interaction=nonstopmode -halt-on-error motivation.tex )
+            && ${LATEXMK} "${TEX_MAIN}.tex" \
+            && ${LATEXMK} motivation.tex )
           cp "${EN_DIR}/${TEX_MAIN}.pdf" "${DOC_BASENAME}-en.pdf"
           cp "${EN_DIR}/motivation.pdf"  "${DOC_BASENAME}-motivation-en.pdf"
 
@@ -140,6 +144,18 @@ jobs:
             ${{ env.DOC_BASENAME }}-en.json
           retention-days: 30
 
+      # Validace až po uploadu: recenzent si i nevyhovující PDF stáhne
+      # a uvidí, co je špatně. Nevyhovující PDF vrátí nenulový kód → PR červený.
+      - name: Validate PDF/UA-2 (veraPDF)
+        uses: docker://verapdf/cli:v1.30.3
+        with:
+          args: >-
+            --flavour ua2 --format text --verbose
+            ${{ env.DOC_BASENAME }}.pdf
+            ${{ env.DOC_BASENAME }}-motivace.pdf
+            ${{ env.DOC_BASENAME }}-en.pdf
+            ${{ env.DOC_BASENAME }}-motivation-en.pdf
+
   # ------------------------------------------------------------------
   #  RELEASE (na git tag vX.Y.Z): build + publikace jako GitHub Release.
   #  PDF + JSON jdou jako assety release. Žádná orphan větev,
@@ -149,7 +165,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/xu-cheng/texlive-full:latest
+      image: ghcr.io/xu-cheng/texlive-full:20261001
     permissions:
       contents: write  # nutné pro vytvoření Release + nahrání assetů
     steps:
@@ -195,21 +211,29 @@ jobs:
 
       - name: Build PDFs
         run: |
-          xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex"
-          xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex"
+          LATEXMK="latexmk -lualatex -interaction=nonstopmode -halt-on-error"
+          ${LATEXMK} "${TEX_MAIN}.tex"
           cp "${TEX_MAIN}.pdf" "${DOC_BASENAME}.pdf"
-          xelatex -interaction=nonstopmode -halt-on-error motivace.tex
-          xelatex -interaction=nonstopmode -halt-on-error motivace.tex
+          ${LATEXMK} motivace.tex
           cp motivace.pdf "${DOC_BASENAME}-motivace.pdf"
 
           # Anglická varianta: build probíhá uvnitř en/ (vlastní preamble.tex).
           ( cd "${EN_DIR}" \
-            && xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex" \
-            && xelatex -interaction=nonstopmode -halt-on-error "${TEX_MAIN}.tex" \
-            && xelatex -interaction=nonstopmode -halt-on-error motivation.tex \
-            && xelatex -interaction=nonstopmode -halt-on-error motivation.tex )
+            && ${LATEXMK} "${TEX_MAIN}.tex" \
+            && ${LATEXMK} motivation.tex )
           cp "${EN_DIR}/${TEX_MAIN}.pdf" "${DOC_BASENAME}-en.pdf"
           cp "${EN_DIR}/motivation.pdf"  "${DOC_BASENAME}-motivation-en.pdf"
+
+      # Brána: nevyhovující PDF/UA-2 se nevydá (ani do `releases`, ani jako Release).
+      - name: Validate PDF/UA-2 (veraPDF)
+        uses: docker://verapdf/cli:v1.30.3
+        with:
+          args: >-
+            --flavour ua2 --format text --verbose
+            ${{ env.DOC_BASENAME }}.pdf
+            ${{ env.DOC_BASENAME }}-motivace.pdf
+            ${{ env.DOC_BASENAME }}-en.pdf
+            ${{ env.DOC_BASENAME }}-motivation-en.pdf
 
       # ----------------------------------------------------------------
       #  Publikace 1/2 — orphan větev `releases` (princip z GitLabu).

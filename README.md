@@ -50,7 +50,8 @@ obecné a předpokládají doplnění podle konkrétní organizační struktury.
 
 ## Build
 
-Zdroj je v LaTeXu (XeLaTeX). PDF se needituje ručně, generuje se ze zdroje.
+Zdroj je v LaTeXu (LuaLaTeX). PDF se needituje ručně, generuje se ze zdroje.
+Výstupem je tagované PDF/UA-2 (přístupné pro čtečky obrazovky), viz [README_TEX.md](README_TEX.md).
 Oba dokumenty sdílejí styl (`preamble.tex`); anglická varianta má v `en/`
 vlastní preambuli (jazyk a uvozovky), jinak je shodná:
 

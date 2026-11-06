@@ -1,6 +1,15 @@
+% ---------- Tagged PDF (PDF/UA-2) ----------
+% Must precede \documentclass. Only LuaLaTeX (and pdfLaTeX) can tag,
+% XeLaTeX cannot. Package support status: add the check-tagging-status key.
+\DocumentMetadata{
+  lang=en,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  tagging=on,
+}
 \documentclass[11pt,a4paper]{article}
 
-% ---------- Encoding / language / fonts (XeLaTeX) ----------
+% ---------- Encoding / language / fonts (LuaLaTeX) ----------
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setdefaultlanguage{english}
@@ -27,11 +36,22 @@
 \definecolor{rule}{HTML}{CCCCCC}
 
 % ---------- Headings ----------
-\usepackage{titlesec}
-\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection.}{0.6em}{}
-\titleformat{\subsection}{\sffamily\large\bfseries\color{blue}}{\thesubsection}{0.6em}{}
-\titleformat{\subsubsection}{\sffamily\normalsize\bfseries\color{black!70}}{\thesubsubsection}{0.5em}{}
-\titlespacing*{\section}{0pt}{14pt}{8pt}
+% Kernel heading templates instead of titlesec: titlesec is incompatible
+% with tagging (headings would not be marked as H1/H2 in the PDF).
+\EditInstance{heading}{section}{
+  heading-decls = \sffamily\Large\bfseries\color{navy},
+  number-format = {\theheading.},
+  before-vspace = 14pt, after-vspace = 8pt,
+}
+\EditInstance{heading}{subsection}{
+  heading-decls = \sffamily\large\bfseries\color{blue},
+}
+\EditInstance{heading}{subsubsection}{
+  heading-decls = \sffamily\normalsize\bfseries\color{black!70},
+}
+\EditInstance{headformat}{section}{number-title-sep = 0.6em}
+\EditInstance{headformat}{subsection}{number-title-sep = 0.6em}
+\EditInstance{headformat}{subsubsection}{number-title-sep = 0.5em}
 
 % ---------- Document metadata (override in the individual .tex) ----------
 \newcommand{\doctitle}{AI-Assisted Development — Rules for Projects}
@@ -46,7 +66,8 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 \fancyhead[L]{\sffamily\footnotesize\color{black!45}\doctitle}
-\fancyfoot[C]{\sffamily\footnotesize\color{black!45}\docclass{} — \versionline \quad Page \thepage{} of \pageref{LastPage}}
+\fancyfoot[C]{\sffamily\footnotesize\color{black!45}\docclass{} — \versionline \quad Page \thepage{} of \pageref*{LastPage}}
+% \pageref* without a link: the footer is an artifact and PDF/UA allows no link inside one.
 
 % ---------- Tables ----------
 \usepackage{tabularx}
@@ -57,6 +78,8 @@
 \newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
 % blast-radius cell: \br{colour}{text}
 \newcommand{\br}[2]{\cellcolor{#1}#2}
+% the first row of every table is a header (TH), not a data cell (TD)
+\tagpdfsetup{table/header-rows={1}}
 
 % ---------- Callout boxes ----------
 \usepackage[most]{tcolorbox}
@@ -92,13 +115,14 @@
 \setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=3pt}
 \setlist[enumerate]{leftmargin=2.2em,itemsep=3pt,topsep=3pt}
 
-% ---------- Checkbox ----------
-\usepackage{amssymb}
-\newcommand{\cb}{$\square$\hspace{0.4em}}
-
-% ---------- Code / listing for ADRs ----------
-\usepackage{fancyvrb}
-\usepackage{fvextra}
+% ---------- Symbols ----------
+% Text glyphs instead of maths: a formula in a tagged PDF needs
+% alternative text, a symbol in running text does not.
+\newfontfamily\symbolfont{DejaVu Sans}[Scale=0.92]
+\newcommand{\cb}{{\symbolfont\symbol{"2610}}\hspace{0.4em}}  % ☐ checkbox
+\newcommand{\sympart}{{\symbolfont\symbol{"223C}}}           % ∼ partial
+\newcommand{\sympoor}{{\symbolfont\symbol{"2212}}}           % − poor
+\newcommand{\then}{{\symbolfont\symbol{"2192}}}              % → then / leads to
 
 % ---------- Links ----------
 \usepackage[hidelinks]{hyperref}

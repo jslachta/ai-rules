@@ -1,5 +1,7 @@
 # Makefile — AI-asistovaný vývoj
-# Vyžaduje: xelatex (TeX Live). Dvojí běh kvůli TOC a \pageref{LastPage}.
+# Vyžaduje: lualatex + latexmk (TeX Live 2026+, kvůli tagovanému PDF/UA-2).
+# latexmk opakuje běhy, dokud se neustálí TOC, \pageref{LastPage} a odkazy
+# (s tagováním to bývají tři běhy, ne dva).
 # Dva dokumenty sdílející preamble.tex:
 #   ai-rules  — hlavní pravidla
 #   motivace  — doprovodný motivační text
@@ -8,7 +10,7 @@
 #   motivation  — doprovodný motivační text (protějšek motivace.tex)
 # Buduje se z adresáře en/, aby \input{preamble.tex} trefil anglickou preambuli.
 
-ENGINE  = xelatex
+LATEXMK = latexmk -lualatex
 FLAGS   = -interaction=nonstopmode -halt-on-error
 DOCS    = ai-rules motivace
 EN_DIR  = en
@@ -26,24 +28,20 @@ cs: ai-rules.pdf motivace.pdf
 en: $(addsuffix .pdf,$(EN_DOCS))
 
 ai-rules.pdf: ai-rules.tex preamble.tex
-	$(ENGINE) $(FLAGS) ai-rules.tex
-	$(ENGINE) $(FLAGS) ai-rules.tex
+	$(LATEXMK) $(FLAGS) ai-rules.tex
 
 motivace.pdf: motivace.tex preamble.tex
-	$(ENGINE) $(FLAGS) motivace.tex
-	$(ENGINE) $(FLAGS) motivace.tex
+	$(LATEXMK) $(FLAGS) motivace.tex
 
 $(EN_DIR)/ai-rules.pdf: $(EN_DIR)/ai-rules.tex $(EN_DIR)/preamble.tex
-	cd $(EN_DIR) && $(ENGINE) $(FLAGS) ai-rules.tex
-	cd $(EN_DIR) && $(ENGINE) $(FLAGS) ai-rules.tex
+	cd $(EN_DIR) && $(LATEXMK) $(FLAGS) ai-rules.tex
 
 $(EN_DIR)/motivation.pdf: $(EN_DIR)/motivation.tex $(EN_DIR)/preamble.tex
-	cd $(EN_DIR) && $(ENGINE) $(FLAGS) motivation.tex
-	cd $(EN_DIR) && $(ENGINE) $(FLAGS) motivation.tex
+	cd $(EN_DIR) && $(LATEXMK) $(FLAGS) motivation.tex
 
-# Průběžný build hlavního dokumentu (vyžaduje latexmk)
+# Průběžný build hlavního dokumentu
 watch:
-	latexmk -pdf -pdflatex="$(ENGINE) $(FLAGS) %O %S" -pvc ai-rules.tex
+	$(LATEXMK) -interaction=nonstopmode -pvc ai-rules.tex
 
 clean:
 	rm -f $(addsuffix .aux,$(DOCS) $(EN_DOCS)) $(addsuffix .log,$(DOCS) $(EN_DOCS)) \

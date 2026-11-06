@@ -1,6 +1,6 @@
 % =====================================================================
 %  AI-asistovaný vývoj — Pravidla pro dlouhodobé a nové projekty
-%  Engine: XeLaTeX  |  Build: make  (viz Makefile)
+%  Engine: LuaLaTeX  |  Build: make  (viz Makefile)
 %  Struktura: SLOUCENY DRAFT - vse v jednom main.tex (snazsi rucni revize)
 %             Po zamrznuti draftu lze opet rozdelit na sekce/*.tex.
 %  Konvence pro diff: one-sentence-per-line v obsahových souborech.
@@ -251,21 +251,21 @@ Jediná výjimka je správa tajemství --- tam AI nesmí generovat vůbec (A1.4)
 Doménová / business logika & \br{green}{Nízký} & \br{green}{+\,/\,+} & AI navrhuje, vývojář ověří & \br{green}{Vede AI} & Vývojář \\
 UI komponenty, formuláře & \br{green}{Nízký} & \br{green}{+\,/\,+} & AI navrhuje & \br{green}{Vede AI} & Vývojář \\
 Testy, dokumentace & \br{green}{Nízký} & \br{green}{+\,/\,+} & Vede AI & \br{green}{Vede AI} & Vývojář \\
-API endpointy, validace vstupu & \br{amber}{Střední} & \br{amber}{+\,/\,$\sim$} & Smíšený, kontrakt ručně & \br{amber}{Smíšený} & Senior vývojář \\
-Integrační kontrakty / vlastnosti & \br{amber}{Stř.--vys.} & \br{red}{$\sim$\,/\,$-$} & \br{red}{Vede vývojář + ADR} & \br{amber}{Vede vývojář + ADR} & Senior vývojář \\
-Autentizace, autorizace & \br{red}{Vysoký} & \br{red}{$-$\,/\,$\sim$} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior + Security \\
-Šifrování, klíče & \br{red}{Kritický} & \br{red}{$-$\,/\,$-$} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior + Security \\
-Perzistence, migrace DB & \br{red}{Vysoký} & \br{red}{$\sim$\,/\,$-$} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior vývojář \\
-Správa tajemství (secrets) & \br{red}{Kritický} & \br{red}{$-$\,/\,$-$} & \br{red}{AI nesmí generovat} & \br{red}{AI nesmí generovat} & Senior + Ops \\
-CI/CD, infrastruktura jako kód & \br{red}{Vysoký} & \br{amber}{$\sim$\,/\,+} & \br{amber}{AI jen rutinní kostra} & \br{amber}{AI jen rutinní kostra} & Senior + Ops \\
+API endpointy, validace vstupu & \br{amber}{Střední} & \br{amber}{+\,/\,\sympart{}} & Smíšený, kontrakt ručně & \br{amber}{Smíšený} & Senior vývojář \\
+Integrační kontrakty / vlastnosti & \br{amber}{Stř.--vys.} & \br{red}{\sympart{}\,/\,\sympoor{}} & \br{red}{Vede vývojář + ADR} & \br{amber}{Vede vývojář + ADR} & Senior vývojář \\
+Autentizace, autorizace & \br{red}{Vysoký} & \br{red}{\sympoor{}\,/\,\sympart{}} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior + Security \\
+Šifrování, klíče & \br{red}{Kritický} & \br{red}{\sympoor{}\,/\,\sympoor{}} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior + Security \\
+Perzistence, migrace DB & \br{red}{Vysoký} & \br{red}{\sympart{}\,/\,\sympoor{}} & \br{red}{Vede vývojář} & \br{red}{Vede vývojář} & Senior vývojář \\
+Správa tajemství (secrets) & \br{red}{Kritický} & \br{red}{\sympoor{}\,/\,\sympoor{}} & \br{red}{AI nesmí generovat} & \br{red}{AI nesmí generovat} & Senior + Ops \\
+CI/CD, infrastruktura jako kód & \br{red}{Vysoký} & \br{amber}{\sympart{}\,/\,+} & \br{amber}{AI jen rutinní kostra} & \br{amber}{AI jen rutinní kostra} & Senior + Ops \\
 \bottomrule
 \end{tabularx}
 
 \medskip
 \begin{calloutplain}[grey]
-\textbf{Ov\,/\,Rev} = ověřitelnost\,/\,reverzibilita: \mbox{\texttt{+}} dobrá, \mbox{\texttt{$\sim$}} částečná, \mbox{\texttt{$-$}} špatná.
-Příklad čtení: šifrování má \mbox{\texttt{$-$\,/\,$-$}} --- chybu těžko poznáme i vrátíme, proto vede vývojář bez ohledu na vše ostatní.
-CI/IaC má velký dosah, ale \mbox{\texttt{$\sim$\,/\,+}} (vratné přes rollback), proto smí AI aspoň rutinní kostru.\\[4pt]
+\textbf{Ov\,/\,Rev} = ověřitelnost\,/\,reverzibilita: \mbox{\texttt{+}} dobrá, \mbox{\texttt{\sympart{}}} částečná, \mbox{\texttt{\sympoor{}}} špatná.
+Příklad čtení: šifrování má \mbox{\texttt{\sympoor{}\,/\,\sympoor{}}} --- chybu těžko poznáme i vrátíme, proto vede vývojář bez ohledu na vše ostatní.
+CI/IaC má velký dosah, ale \mbox{\texttt{\sympart{}\,/\,+}} (vratné přes rollback), proto smí AI aspoň rutinní kostru.\\[4pt]
 \textbf{Čtení matice:} rozdíl zavedený vs nový je nejvýraznější u~doménové a UI vrstvy: u~nového projektu smí AI vést, u~zavedeného jen navrhovat.
 Bezpečnostní a datová vrstva vede vývojář v~obou případech --- riziko nezávisí na stáří projektu.
 \end{calloutplain}
@@ -560,7 +560,7 @@ Místo výčtu konkrétních projektů (ten bude předmětem samostatného vzoro
 \begin{itemize}
 \item \textbf{Znaky:} bez existující báze a integrací; hranice se teprve staví.
 \item \textbf{Režim:} plný režim Části A3 a B2.
-\item \textbf{Postup:} skeleton $\rightarrow$ ADR $\rightarrow$ procházející kostra $\rightarrow$ izolace rizik $\rightarrow$ širší zóna vedená AI.
+\item \textbf{Postup:} skeleton \then{} ADR \then{} procházející kostra \then{} izolace rizik \then{} širší zóna vedená AI.
 \end{itemize}
 
 % =====================================================================
@@ -574,7 +574,7 @@ Zaznamenává proč, ne co.
 
 \begin{tcolorbox}[colback=black!3,colframe=black!20,boxrule=0.4pt,arc=1pt,
   left=8pt,right=8pt,top=6pt,bottom=6pt,fontupper=\ttfamily\small]
-\begin{Verbatim}[breaklines=true]
+\begin{verbatim}
 # ADR-0001: <název rozhodnutí>
 
 ## Status
@@ -593,22 +593,22 @@ Co jsme zvolili a jak konkrétně.
 ## Důsledky
 - Závislosti, které vznikají
 - Kompromisy, které přijímáme
-\end{Verbatim}
+\end{verbatim}
 \end{tcolorbox}
 
 \section{Rychlá pravidla na závěr}
 
 \begin{itemize}
-\item \textbf{Nevíš přesně, co kód dělá} $\rightarrow$ nepoužívej.
-\item \textbf{Má to dopad na bezpečnost/data} $\rightarrow$ smíš použít, jen když to plně převezmeš (A1.2): threat model, testy, obhajoba bez AI. Secrets ani tak (A1.4).
-\item \textbf{Neumíš to vysvětlit bez AI} $\rightarrow$ nemerguj (nezačleňuj).
-\item \textbf{Zavedená báze} $\rightarrow$ AI navrhuje, vývojář píše.
-\item \textbf{Nový projekt} $\rightarrow$ nejdřív skeleton a ADR, pak teprve širší zóna vedená AI.
-\item \textbf{Data pod NDA} $\rightarrow$ bez rozhodnutí vedení o~režimu (B4) se AI nepoužije.
-\item \textbf{Dobře izolované rizikové jádro} $\rightarrow$ zbytek smí vést AI téměř bez omezení (B5).
-\item \textbf{Vše přes povinný MR} $\rightarrow$ \enquote{funguje to} není důvod k~mergi (A5).
-\item \textbf{Obcházení gate} $\rightarrow$ porušení samo o~sobě, eskaluje se (A5/A6).
-\item \textbf{Know-how je odchozí tok} $\rightarrow$ citlivé jádro se ven neodesílá (B6).
+\item \textbf{Nevíš přesně, co kód dělá} \then{} nepoužívej.
+\item \textbf{Má to dopad na bezpečnost/data} \then{} smíš použít, jen když to plně převezmeš (A1.2): threat model, testy, obhajoba bez AI. Secrets ani tak (A1.4).
+\item \textbf{Neumíš to vysvětlit bez AI} \then{} nemerguj (nezačleňuj).
+\item \textbf{Zavedená báze} \then{} AI navrhuje, vývojář píše.
+\item \textbf{Nový projekt} \then{} nejdřív skeleton a ADR, pak teprve širší zóna vedená AI.
+\item \textbf{Data pod NDA} \then{} bez rozhodnutí vedení o~režimu (B4) se AI nepoužije.
+\item \textbf{Dobře izolované rizikové jádro} \then{} zbytek smí vést AI téměř bez omezení (B5).
+\item \textbf{Vše přes povinný MR} \then{} \enquote{funguje to} není důvod k~mergi (A5).
+\item \textbf{Obcházení gate} \then{} porušení samo o~sobě, eskaluje se (A5/A6).
+\item \textbf{Know-how je odchozí tok} \then{} citlivé jádro se ven neodesílá (B6).
 \end{itemize}
 
 \end{document}

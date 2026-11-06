@@ -15,13 +15,40 @@ rozdělené pro dlouhodobé/zavedené a nové projekty.
 
 ## Build
 
-Vyžaduje TeX Live s `xelatex`.
+Vyžaduje TeX Live 2026 (nebo MiKTeX se stejně čerstvým jádrem LaTeXu, 2026-06-01+)
+s `lualatex` a `latexmk`. Starší instalace tagování buď nemají, nebo mají v
+nekonzistentní verzi — `latex-lab` novější než `l3kernel` se projeví chybami už
+v `\DocumentMetadata`; pak pomůže aktualizace distribuce.
 
 ```sh
-make          # vytvoří ai-rules.pdf (dvojí běh kvůli TOC a LastPage)
+make          # vytvoří všechna PDF (latexmk opakuje běhy, dokud se neustálí TOC a odkazy)
+make cs       # jen česká varianta
+make en       # jen anglická varianta
 make clean    # smaže pomocné soubory
-make watch    # průběžný build (vyžaduje latexmk)
+make watch    # průběžný build hlavního dokumentu
 ```
+
+## Tagované PDF (PDF/UA-2)
+
+Výstup je tagované PDF 2.0 podle PDF/UA-2 (přístupnost: čtečky obrazovky,
+přeformátování, extrakce textu). Zapíná ho `\DocumentMetadata` na začátku
+`preamble.tex`; proto engine LuaLaTeX — XeLaTeX tagovat neumí. Shodu ověřuje
+v CI veraPDF a nevyhovující PDF build shodí.
+
+Co z toho plyne pro úpravy zdroje:
+
+- **Žádná matematika pro symboly.** Vzorec v tagovaném PDF potřebuje
+  alternativní text; místo `$\rightarrow$`, `$\sim$`, `$-$`, `$\square$`
+  použij makra `\then`, `\sympart`, `\sympoor`, `\cb` z preambule.
+- **Nadpisy jen přes `\section` a spol.** Vzhled se nastavuje šablonami
+  (`\EditInstance{heading}{...}`), ne balíkem `titlesec` — ten je s tagováním
+  nekompatibilní a nadpisy by v PDF nebyly nadpisy.
+- **Tabulky mají v prvním řádku hlavičku** (`table/header-rows={1}` v preambuli).
+  Tabulka bez hlavičkového řádku potřebuje před sebou vlastní `\tagpdfsetup`.
+- **Nové balíčky prověř** — přidej do `\DocumentMetadata` klíč
+  `check-tagging-status` a v logu je přehled, které balíčky jsou s tagováním
+  kompatibilní. Nekompatibilní jsou např. `titlesec`, `fvextra`.
+- Odkaz v patičce/záhlaví nesmí být (patička je artefakt) — proto `\pageref*`.
 
 ## Struktura ai-rules.tex
 
