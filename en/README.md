@@ -6,9 +6,9 @@ A framework for managing the risks of developing software with AI assistance —
 and just as well without it. It is written as a template to adopt and adapt,
 not as a finished corporate policy.
 
-**[Download the current PDF](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules-en.pdf)**
+**[Download the current PDF](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules-en.pdf)**
 
-The companion text **[Why these rules](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules-motivation-en.pdf)**
+The companion text **[Why these rules](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules-motivation-en.pdf)**
 explains the motivation behind the framework — what it grew out of and why it
 matters.
 

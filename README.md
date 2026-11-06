@@ -6,14 +6,14 @@ Rámec pro řízení rizik při vývoji softwaru s asistencí AI - a stejně tak
 bez ní. Je koncipován jako šablona k převzetí a úpravě, nikoli jako hotová
 firemní směrnice.
 
-**[Stáhnout aktuální PDF](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules.pdf)**
+**[Stáhnout aktuální PDF](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules.pdf)**
 
-Doprovodný text **[Proč tato pravidla](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules-motivace.pdf)**
+Doprovodný text **[Proč tato pravidla](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules-motivace.pdf)**
 vysvětluje motivaci za rámcem - z čeho vyrostl a proč na něm záleží.
 
 > **In English?** The framework is available in English as well:
-> **[English README](en/README.md)** · [rules (PDF)](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules-en.pdf)
-> · [motivation (PDF)](https://github.com/jslachta/ai-rules-oss-poc/raw/releases/ai-dev-rules-motivation-en.pdf)
+> **[English README](en/README.md)** · [rules (PDF)](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules-en.pdf)
+> · [motivation (PDF)](https://github.com/jslachta/ai-rules/raw/releases/ai-dev-rules-motivation-en.pdf)
 > · [source in `en/`](en/). Both language variants ship under the same tag
 > and the same version number.
 
