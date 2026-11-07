@@ -1,6 +1,15 @@
+% ---------- Tagované PDF (PDF/UA-2) ----------
+% Musí předcházet \documentclass. Tagování umí jen LuaLaTeX (a pdfLaTeX),
+% XeLaTeX ne. Stav podpory balíčků: přidej klíč check-tagging-status.
+\DocumentMetadata{
+  lang=cs,
+  pdfversion=2.0,
+  pdfstandard=ua-2,
+  tagging=on,
+}
 \documentclass[11pt,a4paper]{article}
 
-% ---------- Kódování / jazyk / fonty (XeLaTeX) ----------
+% ---------- Kódování / jazyk / fonty (LuaLaTeX) ----------
 \usepackage{fontspec}
 \usepackage{polyglossia}
 \setdefaultlanguage{czech}
@@ -27,11 +36,22 @@
 \definecolor{rule}{HTML}{CCCCCC}
 
 % ---------- Nadpisy ----------
-\usepackage{titlesec}
-\titleformat{\section}{\sffamily\Large\bfseries\color{navy}}{\thesection.}{0.6em}{}
-\titleformat{\subsection}{\sffamily\large\bfseries\color{blue}}{\thesubsection}{0.6em}{}
-\titleformat{\subsubsection}{\sffamily\normalsize\bfseries\color{black!70}}{\thesubsubsection}{0.5em}{}
-\titlespacing*{\section}{0pt}{14pt}{8pt}
+% Šablony nadpisů z jádra místo titlesec: titlesec je s tagováním
+% nekompatibilní (nadpisy by v PDF nebyly označené jako H1/H2).
+\EditInstance{heading}{section}{
+  heading-decls = \sffamily\Large\bfseries\color{navy},
+  number-format = {\theheading.},
+  before-vspace = 14pt, after-vspace = 8pt,
+}
+\EditInstance{heading}{subsection}{
+  heading-decls = \sffamily\large\bfseries\color{blue},
+}
+\EditInstance{heading}{subsubsection}{
+  heading-decls = \sffamily\normalsize\bfseries\color{black!70},
+}
+\EditInstance{headformat}{section}{number-title-sep = 0.6em}
+\EditInstance{headformat}{subsection}{number-title-sep = 0.6em}
+\EditInstance{headformat}{subsubsection}{number-title-sep = 0.5em}
 
 % ---------- Metadata dokumentu (přepiš v konkrétním .tex) ----------
 \newcommand{\doctitle}{AI-asistovaný vývoj — Pravidla pro projekty}
@@ -46,7 +66,8 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 \fancyhead[L]{\sffamily\footnotesize\color{black!45}\doctitle}
-\fancyfoot[C]{\sffamily\footnotesize\color{black!45}\docclass{} — \versionline \quad Strana \thepage{} z \pageref{LastPage}}
+\fancyfoot[C]{\sffamily\footnotesize\color{black!45}\docclass{} — \versionline \quad Strana \thepage{} z \pageref*{LastPage}}
+% \pageref* bez odkazu: patička je artefakt a odkaz v artefaktu PDF/UA nepřipouští.
 
 % ---------- Tabulky ----------
 \usepackage{tabularx}
@@ -57,6 +78,8 @@
 \newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
 % buňka blast-radius: \br{barva}{text}
 \newcommand{\br}[2]{\cellcolor{#1}#2}
+% první řádek každé tabulky je hlavička (TH), ne datová buňka (TD)
+\tagpdfsetup{table/header-rows={1}}
 
 % ---------- Callout boxy ----------
 \usepackage[most]{tcolorbox}
@@ -92,13 +115,14 @@
 \setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=3pt}
 \setlist[enumerate]{leftmargin=2.2em,itemsep=3pt,topsep=3pt}
 
-% ---------- Checkbox ----------
-\usepackage{amssymb}
-\newcommand{\cb}{$\square$\hspace{0.4em}}
-
-% ---------- Kód / listing pro ADR ----------
-\usepackage{fancyvrb}
-\usepackage{fvextra}
+% ---------- Symboly ----------
+% Textové glyfy místo matematiky: vzorec v tagovaném PDF potřebuje
+% alternativní text, symbol v textu ne.
+\newfontfamily\symbolfont{DejaVu Sans}[Scale=0.92]
+\newcommand{\cb}{{\symbolfont\symbol{"2610}}\hspace{0.4em}}  % ☐ checkbox
+\newcommand{\sympart}{{\symbolfont\symbol{"223C}}}           % ∼ částečně
+\newcommand{\sympoor}{{\symbolfont\symbol{"2212}}}           % − špatně
+\newcommand{\then}{{\symbolfont\symbol{"2192}}}              % → pak / vede k
 
 % ---------- Odkazy ----------
 \usepackage[hidelinks]{hyperref}

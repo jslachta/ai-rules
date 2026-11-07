@@ -22,6 +22,12 @@ běhu, se stejnou verzí, jen s postfixem `-en` v názvu assetu
 aby `\input{preamble.tex}` trefil anglickou preambuli; CI proto kopíruje
 vygenerovaný `version.tex` i tam.
 
+PDF jsou tagovaná podle PDF/UA-2 a před uploadem/publikací je kontroluje
+**veraPDF** (`--flavour ua2`). Nevyhovující PDF shodí build: u PR je PDF i tak
+v artifactu (validace běží až po uploadu, ať je co prohlížet), vydání se
+nevydá vůbec. TeX Live i veraPDF jsou připnuté na konkrétní verzi — tagování
+se mezi verzemi jádra LaTeXu mění, `latest` by vydání dělal nereprodukovatelným.
+
 Hlavní větev (`main`) je **čistě zdroj** — žádné PDF. Výstupy žijí
 v oddělené větvi `releases` (model jako `gh-pages`).
 

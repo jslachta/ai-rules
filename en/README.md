@@ -52,7 +52,8 @@ organisational structure.
 
 ## Build
 
-The source is LaTeX (XeLaTeX). The PDF is not edited by hand, it is generated
+The source is LaTeX (LuaLaTeX); the output is a tagged PDF/UA-2, accessible to
+screen readers. The PDF is not edited by hand, it is generated
 from the source. Build from the repository root:
 
 ```sh

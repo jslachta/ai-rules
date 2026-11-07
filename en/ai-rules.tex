@@ -1,6 +1,6 @@
 % =====================================================================
 %  AI-Assisted Development — Rules for long-lived and new projects
-%  Engine: XeLaTeX  |  Build: make  (see Makefile)
+%  Engine: LuaLaTeX  |  Build: make  (see Makefile)
 %  Structure: MERGED DRAFT - everything in one main .tex (easier manual review).
 %             Once the draft is frozen it can be split into sections/*.tex again.
 %  Diff convention: one-sentence-per-line in content files.
@@ -252,21 +252,21 @@ The only exception is secrets management --- there AI must not generate at all (
 Domain / business logic & \br{green}{Low} & \br{green}{+\,/\,+} & AI proposes, developer verifies & \br{green}{AI-led} & Developer \\
 UI components, forms & \br{green}{Low} & \br{green}{+\,/\,+} & AI proposes & \br{green}{AI-led} & Developer \\
 Tests, documentation & \br{green}{Low} & \br{green}{+\,/\,+} & AI-led & \br{green}{AI-led} & Developer \\
-API endpoints, input validation & \br{amber}{Medium} & \br{amber}{+\,/\,$\sim$} & Mixed, contract by hand & \br{amber}{Mixed} & Senior developer \\
-Integration contracts / properties & \br{amber}{Med.--high} & \br{red}{$\sim$\,/\,$-$} & \br{red}{Developer-led + ADR} & \br{amber}{Developer-led + ADR} & Senior developer \\
-Authentication, authorisation & \br{red}{High} & \br{red}{$-$\,/\,$\sim$} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior + Security \\
-Encryption, keys & \br{red}{Critical} & \br{red}{$-$\,/\,$-$} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior + Security \\
-Persistence, DB migrations & \br{red}{High} & \br{red}{$\sim$\,/\,$-$} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior developer \\
-Secrets management & \br{red}{Critical} & \br{red}{$-$\,/\,$-$} & \br{red}{AI must not generate} & \br{red}{AI must not generate} & Senior + Ops \\
-CI/CD, infrastructure as code & \br{red}{High} & \br{amber}{$\sim$\,/\,+} & \br{amber}{AI for routine scaffolding only} & \br{amber}{AI for routine scaffolding only} & Senior + Ops \\
+API endpoints, input validation & \br{amber}{Medium} & \br{amber}{+\,/\,\sympart{}} & Mixed, contract by hand & \br{amber}{Mixed} & Senior developer \\
+Integration contracts / properties & \br{amber}{Med.--high} & \br{red}{\sympart{}\,/\,\sympoor{}} & \br{red}{Developer-led + ADR} & \br{amber}{Developer-led + ADR} & Senior developer \\
+Authentication, authorisation & \br{red}{High} & \br{red}{\sympoor{}\,/\,\sympart{}} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior + Security \\
+Encryption, keys & \br{red}{Critical} & \br{red}{\sympoor{}\,/\,\sympoor{}} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior + Security \\
+Persistence, DB migrations & \br{red}{High} & \br{red}{\sympart{}\,/\,\sympoor{}} & \br{red}{Developer-led} & \br{red}{Developer-led} & Senior developer \\
+Secrets management & \br{red}{Critical} & \br{red}{\sympoor{}\,/\,\sympoor{}} & \br{red}{AI must not generate} & \br{red}{AI must not generate} & Senior + Ops \\
+CI/CD, infrastructure as code & \br{red}{High} & \br{amber}{\sympart{}\,/\,+} & \br{amber}{AI for routine scaffolding only} & \br{amber}{AI for routine scaffolding only} & Senior + Ops \\
 \bottomrule
 \end{tabularx}
 
 \medskip
 \begin{calloutplain}[grey]
-\textbf{Vf\,/\,Rv} = verifiability\,/\,reversibility: \mbox{\texttt{+}} good, \mbox{\texttt{$\sim$}} partial, \mbox{\texttt{$-$}} poor.
-How to read it: encryption has \mbox{\texttt{$-$\,/\,$-$}} --- a fault there is hard to detect and hard to undo, so the developer leads regardless of everything else.
-CI/IaC has a large radius, but \mbox{\texttt{$\sim$\,/\,+}} (reversible by rollback), so AI may at least do the routine scaffolding.\\[4pt]
+\textbf{Vf\,/\,Rv} = verifiability\,/\,reversibility: \mbox{\texttt{+}} good, \mbox{\texttt{\sympart{}}} partial, \mbox{\texttt{\sympoor{}}} poor.
+How to read it: encryption has \mbox{\texttt{\sympoor{}\,/\,\sympoor{}}} --- a fault there is hard to detect and hard to undo, so the developer leads regardless of everything else.
+CI/IaC has a large radius, but \mbox{\texttt{\sympart{}\,/\,+}} (reversible by rollback), so AI may at least do the routine scaffolding.\\[4pt]
 \textbf{Reading the matrix:} the difference between established and new is most pronounced in the domain and UI layers: in a new project AI may lead, in an established one it may only propose.
 The security and data layers are developer-led in both cases --- the risk does not depend on the age of the project.
 \end{calloutplain}
@@ -561,7 +561,7 @@ Instead of listing specific projects (that will be the subject of a separate exa
 \begin{itemize}
 \item \textbf{Signs:} no existing codebase or integrations; the boundaries are still being drawn.
 \item \textbf{Mode:} the full regime of Parts A3 and B2.
-\item \textbf{Sequence:} skeleton $\rightarrow$ ADR $\rightarrow$ walking skeleton $\rightarrow$ isolation of risks $\rightarrow$ a wider AI-led zone.
+\item \textbf{Sequence:} skeleton \then{} ADR \then{} walking skeleton \then{} isolation of risks \then{} a wider AI-led zone.
 \end{itemize}
 
 % =====================================================================
@@ -575,7 +575,7 @@ It records the why, not the what.
 
 \begin{tcolorbox}[colback=black!3,colframe=black!20,boxrule=0.4pt,arc=1pt,
   left=8pt,right=8pt,top=6pt,bottom=6pt,fontupper=\ttfamily\small]
-\begin{Verbatim}[breaklines=true]
+\begin{verbatim}
 # ADR-0001: <decision title>
 
 ## Status
@@ -594,22 +594,22 @@ What we chose and how, specifically.
 ## Consequences
 - Dependencies this creates
 - Trade-offs we accept
-\end{Verbatim}
+\end{verbatim}
 \end{tcolorbox}
 
 \section{Quick rules to close}
 
 \begin{itemize}
-\item \textbf{You do not know exactly what the code does} $\rightarrow$ do not use it.
-\item \textbf{It affects security/data} $\rightarrow$ you may use it only if you take full ownership (A1.2): threat model, tests, a defence without AI. Secrets not even then (A1.4).
-\item \textbf{You cannot explain it without AI} $\rightarrow$ do not merge it.
-\item \textbf{Established codebase} $\rightarrow$ AI proposes, the developer writes.
-\item \textbf{New project} $\rightarrow$ skeleton and ADRs first, only then a wider AI-led zone.
-\item \textbf{Data under NDA} $\rightarrow$ without a leadership decision on the mode (B4), AI is not used.
-\item \textbf{A well-isolated risk-bearing core} $\rightarrow$ AI may lead the rest almost without restriction (B5).
-\item \textbf{Everything through a mandatory MR} $\rightarrow$ \enquote{it works} is not a reason to merge (A5).
-\item \textbf{Bypassing the gate} $\rightarrow$ a breach in itself, and it escalates (A5/A6).
-\item \textbf{Know-how is an outbound flow} $\rightarrow$ the sensitive core is not sent out (B6).
+\item \textbf{You do not know exactly what the code does} \then{} do not use it.
+\item \textbf{It affects security/data} \then{} you may use it only if you take full ownership (A1.2): threat model, tests, a defence without AI. Secrets not even then (A1.4).
+\item \textbf{You cannot explain it without AI} \then{} do not merge it.
+\item \textbf{Established codebase} \then{} AI proposes, the developer writes.
+\item \textbf{New project} \then{} skeleton and ADRs first, only then a wider AI-led zone.
+\item \textbf{Data under NDA} \then{} without a leadership decision on the mode (B4), AI is not used.
+\item \textbf{A well-isolated risk-bearing core} \then{} AI may lead the rest almost without restriction (B5).
+\item \textbf{Everything through a mandatory MR} \then{} \enquote{it works} is not a reason to merge (A5).
+\item \textbf{Bypassing the gate} \then{} a breach in itself, and it escalates (A5/A6).
+\item \textbf{Know-how is an outbound flow} \then{} the sensitive core is not sent out (B6).
 \end{itemize}
 
 \end{document}
